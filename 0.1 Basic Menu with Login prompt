@@ -1,0 +1,58 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.io.*;
+public class Main {
+    public static void main(String[] args) {
+        // create an array list to store valid usernames and passwords
+        ArrayList<String> validUsers = new ArrayList<String>();
+        validUsers.add("username1:password1");
+        validUsers.add("username2:password2");
+        validUsers.add("username3:password3");
+
+        // create a scanner to read input from the command line
+        Scanner input = new Scanner(System.in);
+
+        // prompt the user for their username and password
+        System.out.println("============================================================");
+        System.out.println("=============Welcome to the bookkeeping system==============");
+        System.out.println("===================Created by: Aethyr IT====================");
+        System.out.println("============================================================");
+        System.out.println("                       Please Login                       ");
+        System.out.print("Enter your username: ");
+        String username = input.nextLine();
+        System.out.print("Enter your password: ");
+        String password = input.nextLine();
+
+        // check if the entered username and password are in the array list of valid users
+        boolean validLogin = false;
+        for (String validUser : validUsers) {
+            String[] parts = validUser.split(":");
+            if (parts[0].equals(username) && parts[1].equals(password)) {
+                validLogin = true;
+                break;
+            }
+        }
+
+        // Enters User into the main program
+        if (validLogin) {
+            System.out.println("Login successful!");
+            System.out.println("=============================================================");
+            System.out.println("==========Welcome To The Bookkeep Rental Management==========");
+            System.out.println("=============================================================");
+            System.out.println("1. Admin Account");
+            System.out.println("2. Books");
+            System.out.println("3. User Accounts");
+            System.out.println("4. Lists All User Rental Records");
+            System.out.println("5. Top User That Rent Most Books");
+            System.out.println("6. Show Individual Matched Preferences");
+            System.out.println("What would you like to access");
+            String choice = input.nextLine();
+            switch (choice) {
+                case 1:
+
+            }
+        } else {
+            System.out.println("Invalid username or password. Please try again.");
+        }
+    }
+}
