@@ -1,62 +1,612 @@
-import java.util.ArrayList;
+import java.sql.SQLOutput;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+import java.util.prefs.Preferences;
 
 public class Main {
     public static void main(String[] args) {
+        // create an array list to store valid admin usernames and passwords
+        List<AdminAccount> validUsers = new ArrayList<>();
+        validUsers.add(new AdminAccount(1, "user1", "username1", "password1"));
+        validUsers.add(new AdminAccount(2, "user2", "username2", "password2"));
+        validUsers.add(new AdminAccount(3, "user3", "username3", "password3"));
+
+        // create an array list to store book information
+        List<Book> Books = new ArrayList<>();
+        Books.add(new Book(01, "moby", "whale hunting", "fantasy", 10.99));
+        Books.add(new Book(02, "Fahrenheit 451", "books are illegal", "Sci-fi", 12.99));
+        Books.add(new Book(03, "The art of war", "strategies", "Philosophy", 15.99));
+
         ArrayList<UserAccount> userAccountList = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
 
-        while (true) {
-            System.out.print("Enter user ID: ");
-            int userID = scanner.nextInt();
-            System.out.print("Enter user first name: ");
-            String userFirstName = scanner.next();
-            System.out.print("Enter user last name: ");
-            String userLastName = scanner.next();
-            System.out.print("Enter user created date: ");
-            String userCreatedDate = scanner.next();
 
-            UserAccount user = new UserAccount(userID, userFirstName, userLastName, userCreatedDate);
-            userAccountList.add(user);
+        // create a scanner to read input from the command line
+        Scanner input = new Scanner(System.in);
 
-            while (true) {
-                System.out.print("Do you want to add a genre to the user? (yes/no): ");
-                String answer = scanner.next();
-                if (answer.equalsIgnoreCase("yes")) {
-                    System.out.print("Enter genre: ");
-                    String genre = scanner.next();
-                    user.addGenre(genre);
-                } else {
+        boolean validLogin = false;
+        while (!validLogin) {
+
+            // prompt the user for their username and password
+            System.out.println("============================================================");
+            System.out.println("=============Welcome to the bookkeeping system==============");
+            System.out.println("===================Created by: Aethyr IT====================");
+            System.out.println("============================================================");
+            System.out.println("                       Please Login                       ");
+            System.out.print("Enter your username: ");
+            String username = input.nextLine();
+            System.out.print("Enter your password: ");
+            String password = input.nextLine();
+
+            // check if the entered username and password are in the array list of valid users
+            validLogin = false;
+            for (AdminAccount validUser : validUsers) {
+                if (validUser.getAdminUsername().equals(username) && validUser.getAdminPassword().equals(password)) {
+                    validLogin = true;
                     break;
                 }
             }
-
+        }
+        // displays available features (Main Menu UI)
+        if (validLogin) {
+            System.out.println("Login successful!");
             while (true) {
-                System.out.print("Do you want to remove a genre from the user? (yes/no): ");
-                String answer = scanner.next();
-                if (answer.equalsIgnoreCase("yes")) {
-                    System.out.print("Enter genre: ");
-                    String genre = scanner.next();
-                    user.removeGenre(genre);
-                } else {
-                    break;
+                System.out.println("=============================================================");
+                System.out.println("==========Welcome To The Bookkeep Rental Management==========");
+                System.out.println("=============================================================");
+                System.out.println("1. Admin Account");
+                System.out.println("2. Books");
+                System.out.println("3. User Accounts");
+                System.out.println("4. Lists All User Rental Records");
+                System.out.println("5. Top User That Rent Most Books");
+                System.out.println("6. Show Individual Matched Preferences");
+                System.out.println("7. Exit Program");
+                System.out.println("============================================================");
+
+                //prompts user to choose a feature
+                System.out.println("What would you like to access: ");
+                int choice = input.nextInt();
+                System.out.println("============================================================");
+                switch (choice) {
+
+                    // Admin Account Management (main menu)
+                    case 1: {
+                        System.out.println("***Admin Account***");
+                        System.out.println("1. add admin accounts");
+                        System.out.println("2. delete admin accounts");
+                        System.out.println("3. Show admin account list");
+                        int adminAccount = input.nextInt();
+                        switch (adminAccount) {
+
+                            // Admin Account Management (Add Account)
+                            case 1: {
+                                System.out.println("Adding Account");
+                                System.out.println("Please input ID: ");
+                                int AdminID = input.nextInt();
+                                input.nextLine();
+
+                                System.out.println("Please input name: ");
+                                String AdminName = input.nextLine();
+
+                                System.out.println("Please input username: ");
+                                String AdminUsername = input.nextLine();
+
+                                System.out.println("Please input password: ");
+                                String AdminPassword = input.nextLine();
+
+                                AdminAccount newValidusers = new AdminAccount(AdminID, AdminName, AdminUsername, AdminPassword);
+                                validUsers.add(newValidusers);
+
+                                break;
+                            }
+
+                            // Admin Account Management (Delete Account)
+                            case 2: {
+                                System.out.println("Deleting Account");
+                                System.out.print("Enter the username to be deleted: ");
+                                String username = input.nextLine();
+
+                                boolean found = false;
+                                for (int i = 0; i < validUsers.size(); i++) {
+                                    AdminAccount admin = validUsers.get(i);
+                                    if (admin.getAdminUsername().equals(username)) {
+                                        validUsers.remove(i);
+                                        System.out.println("Account with username '" + username + "' has been successfully deleted.");
+                                        found = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!found) {
+                                    System.out.println("No account with username '" + username + "' was found.");
+                                }
+                                System.out.println("====================================");
+                                break;
+                            }
+
+                            // Admin Account Management (Display List Of Admin Accounts)\
+                            case 3: {
+                                System.out.println("====================================");
+                                System.out.println("Displaying list of admin accounts");
+                                for (int i = 0; i < validUsers.size(); i++)
+                                    System.out.println(validUsers.get(i).toString());
+                                System.out.println("====================================");
+                                break;
+                            }
+                            default: {
+                                System.out.println("invalid input");
+                                break;
+                            }
+                        }
+                        break;
+                    }
+
+                    case 2: {
+                        System.out.println("Books");
+                        System.out.println("***Books***");
+                        System.out.println("1. add book");
+                        System.out.println("2. delete book");
+                        System.out.println("3. Show book list");
+                        System.out.println("4. Most expensive book");
+                        System.out.println("5. cheapest book");
+                        int Bookaccouts = input.nextInt();
+                        switch (Bookaccouts) {
+                            case 1: {
+                                System.out.println("Adding Books");
+                                System.out.println("Please input book ID: ");
+                                int Bookid = input.nextInt();
+                                input.nextLine();
+
+                                System.out.println("Please input book name: ");
+                                String bookname = input.nextLine();
+
+                                System.out.println("Please input book description: ");
+                                String description = input.nextLine();
+
+                                System.out.println("Please input book genre ");
+                                String genre = input.nextLine();
+
+                                System.out.println("Please input rental price");
+                                double rental = input.nextDouble();
+
+                                Book newbook = new Book(Bookid, bookname, description, genre, rental);
+                                Books.add(newbook);
+
+                                break;
+                            }
+                            case 2: {
+                                System.out.println("Enter the book ID to be removed: ");
+                                int id = input.nextInt();
+
+                                for (int i = 0; i < Books.size(); i++) {
+                                    if (Books.get(i).getBookID() == id) {
+                                        Books.remove(i);
+                                        System.out.println("The book with ID " + id + " has been removed.");
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                            case 3: {
+                                System.out.println("====================================");
+                                System.out.println("Displaying list of books");
+                                for (int i = 0; i < Books.size(); i++)
+                                    System.out.println(Books.get(i).toString());
+
+                                System.out.println("====================================");
+                                break;
+
+                            }
+                            case 4: {
+                                double maxPrice = Double.MIN_VALUE;
+                                Book mostExpensive = null;
+                                for (Book book : Books) {
+                                    if (book.getRental() > maxPrice) {
+                                        maxPrice = book.getRental();
+                                        mostExpensive = book;
+                                    }
+                                }
+                                System.out.println("The most expensive book is: " + mostExpensive.getBookName() + " with a price of " + maxPrice);
+                                break;
+                            }
+                            case 5: {
+                                Collections.sort(Books, (b1, b2) -> Double.compare(b1.getRental(), b2.getRental()));
+                                System.out.println("The cheapest book is: " + Books.get(0));
+                                break;
+                            }
+                            default:
+                                System.out.println("Invalid Input");
+                                break;
+                        }
+                        break;
+                    }
+
+                    case 3: {
+                        System.out.println("User Accounts");
+                        System.out.println("***User Accounts***");
+                        System.out.println("1. add user accounts");
+                        System.out.println("2. delete user accounts");
+                        System.out.println("3. Show user account list");
+                        int userAccount = input.nextInt();
+                        switch (userAccount) {
+
+                            // User Account Management (Add Account)
+                            case 1: {
+                                while (true) {
+                                    System.out.print("Enter user ID: ");
+                                    int userID = input.nextInt();
+                                    System.out.print("Enter user first name: ");
+                                    String userFirstName = input.next();
+                                    System.out.print("Enter user last name: ");
+                                    String userLastName = input.next();
+                                    System.out.print("Enter user created date: ");
+                                    String userCreatedDate = input.next();
+
+                                    UserAccount user = new UserAccount(userID, userFirstName, userLastName, userCreatedDate);
+                                    userAccountList.add(user);
+
+                                    while (true) {
+                                        System.out.print("Do you want to add a genre to the user? (yes/no): ");
+                                        String answer = input.next();
+                                        if (answer.equalsIgnoreCase("yes")) {
+                                            System.out.print("Enter genre: ");
+                                            String genre = input.next();
+                                            user.addGenre(genre);
+                                        } else {
+                                            break;
+                                        }
+                                    }
+
+                                    while (true) {
+                                        System.out.print("Do you want to remove a genre from the user? (yes/no): ");
+                                        String answer = input.next();
+                                        if (answer.equalsIgnoreCase("yes")) {
+                                            System.out.print("Enter genre: ");
+                                            String genre = input.next();
+                                            user.removeGenre(genre);
+                                        } else {
+                                            break;
+                                        }
+                                    }
+
+                                    System.out.print("Do you want to add another user? (yes/no): ");
+                                    String answer = input.next();
+                                    if (!answer.equalsIgnoreCase("yes")) {
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                            // User Account Management (Delete Account)
+                            case 2: {
+                                System.out.println("Deleting Account");
+                                System.out.print("Enter the username to be deleted: ");
+                                int userID = input.nextInt();
+
+                                boolean found = false;
+                                for (int i = 0; i < UserAccountsize(); i++) {
+                                        UserAccount user = UserAccounts.get(i);
+                                    if (user.getUserID() == userID) {
+                                        validUsers.remove(i);
+                                        System.out.println("Account with user ID '" + userID + "' has been successfully deleted.");
+                                        found = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!found) {
+                                    System.out.println("No account with user ID '" + userID + "' was found.");
+                                }
+                                System.out.println("====================================");
+                                break;
+                            }
+
+                            // User Account Management (Display List Of Admin Accounts)
+                            case 3: {
+                                System.out.println("====================================");
+                                System.out.println("Displaying list of user accounts");
+                                for (int i = 0; i < UserAccounts.size(); i++)
+                                    System.out.println(UserAccounts.get(i).toString());
+                                System.out.println("====================================");
+                                break;
+                            }
+                            default: {
+                                System.out.println("invalid input");
+                                break;
+                            }
+                        }
+                        break;
+
+                    }
+                    case 4: {
+                        System.out.println("Lists All User Rental Records");
+                        break;
+                    }
+                    case 5: {
+                        System.out.println("Top User That Rent Most Books");
+                        break;
+                    }
+                    case 6: {
+                        System.out.println("Show Individual Matched Preferences");
+                        break;
+                    }
+                    case 7: {
+                        System.out.println("Exiting the program");
+                        System.exit(0);
+                    }
+                    default: {
+                        System.out.println("Invalid Input please choose a number from 1 - 7");
+                    }
+
                 }
             }
+        } else {
+            System.out.println("=============================================================");
+            System.out.println("    Invalid username or password. Please try again.");
+        }
+    }
+}
 
-            System.out.print("Do you want to add another user? (yes/no): ");
-            String answer = scanner.next();
-            if (!answer.equalsIgnoreCase("yes")) {
-                break;
-            }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // the admin class
+    class AdminAccount {
+        private int adminID;
+        private String adminName;
+        private String adminUsername;
+        private String adminPassword;
+
+        public AdminAccount(int adminID, String adminName, String adminUsername, String adminPassword) {
+            this.adminID = adminID;
+            this.adminName = adminName;
+            this.adminUsername = adminUsername;
+            this.adminPassword = adminPassword;
         }
 
-        // Print the user account list
-        for (UserAccount user : userAccountList) {
-            System.out.println("User ID: " + user.getUserID());
-            System.out.println("User Name: " + user.getUserFirstName() + " " + user.getUserLastName());
-            System.out.println("User Created Date: " + user.getUserCreatedDate());
-            System.out.println("User Genre Preferences: " + user.getUserGenrePreferences());
-            System.out.println();
+        // makes output not jumbled mess...
+        @Override
+        public String toString() {
+            return "Admin ID: " + this.adminID + ", Admin Name: " + this.adminName + ", Admin Username: " + this.adminUsername + ", Admin Password: " + this.adminPassword;
         }
+
+
+        // sets and gets AdminID
+        public int getAdminID() {
+            return adminID;
+        }
+
+        public void setAdminID(int adminID) {
+            this.adminID = adminID;
+        }
+
+        // sets and gets AdminName
+        public String getAdminName() {
+            return adminName;
+        }
+
+        public void setAdminName(String adminName) {
+            this.adminName = adminName;
+        }
+
+        // sets and gets AdminUsername
+        public String getAdminUsername() {
+            return adminUsername;
+        }
+
+        public void setAdminUsername(String adminUsername) {
+            this.adminUsername = adminUsername;
+        }
+
+        // sets and gets AdminPassword
+        public String getAdminPassword() {
+            return adminPassword;
+        }
+
+        public void setAdminPassword(String adminPassword) {
+            this.adminPassword = adminPassword;
+        }
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //the book class
+    class Book{
+        private int Bookid;
+        private String bookname;
+        private String description;
+        private String genre;
+        private double rental;
+
+        public Book(int Bookid, String bookname, String description, String genre, double rental) {
+            this.Bookid = Bookid;
+            this.bookname = bookname;
+            this.description = description;
+            this.genre = genre;
+            this.rental = rental;
+        }
+
+    @Override
+    public String toString() {
+        return "Book ID: " + this.Bookid + ", Book Name: " + this.bookname + ", Book Description: " + this.description + ", Book Genre: " + this.genre + ",Rental price: $" + this.rental;
+    }
+
+        // sets and gets book
+        public int getBookID() {
+            return Bookid;
+        }
+        public void setBookid(int Bookid) {
+            this.Bookid = Bookid;
+        }
+        ///////////////////////////////////////////
+        public String getBookName() {
+            return bookname;
+        }
+        public void setBookName(String Bookname) {
+            this.bookname = Bookname;
+        }
+        ///////////////////////////////////////////
+        public String getDescription() {
+            return description;
+        }
+        public void setDescription(String description) {
+            this.description = description;
+        }
+        ///////////////////////////////////////////
+        public String getGenre() {
+            return genre;
+        }
+        public void setGenre(String genre) {
+            this.genre = genre;
+        }
+        //////////////////////////////////////////
+        public double getRental() {
+            return rental;
+        }
+        public void setRental(int rental) {
+            this.rental = rental;
+        }
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// User account class
+   class UserAccount {
+    private int userID;
+    private String firstName;
+    private String lastName;
+    private String createdDate;
+    private ArrayList<String> genrePreferences;
+    private ArrayList<ArrayList<Book>> sortedBooks;
+
+    public UserAccount(int userID, String firstName, String lastName, String createdDate) {
+        this.userID = userID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.createdDate = createdDate;
+
+    }
+
+    public void addGenreaPreference(String genre) {
+        genrePreferences.add(genre);
+    }
+
+    public void removePreference(String genre) {
+        genrePreferences.remove(genre);
+    }
+
+    // makes output not jumbled mess...
+    @Override
+    public String toString() {
+        return "User ID: " + this.userID + ", First Name: " + this.firstName + ", Last name: " + this.lastName + ", Creation date: " + this.createdDate;
+    }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public ArrayList<String> getGenrePreferences() {
+        return genrePreferences;
+    }
+
+    public void addGenre(String genre) {
+        genrePreferences.add(genre);
+    }
+
+    public void removeGenre(String genre) {
+        genrePreferences.remove(genre);
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Rental Class
+ class Rental {
+    private int rentalID;
+    private String rentalDate;
+    private UserAccount rentalUserAccount;
+    private ArrayList<Book> rentalBookList;
+
+    public Rental(int rentalID, String rentalDate, UserAccount rentalUserAccount) {
+        this.rentalID = rentalID;
+        this.rentalDate = rentalDate;
+        this.rentalUserAccount = rentalUserAccount;
+        this.rentalBookList = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return "Rental ID: " + rentalID + ", Rental Date: " + rentalDate + ", Rental UserAccount: " + rentalUserAccount + ", Rental Book List: " + rentalBookList;
+    }
+
+    public int getRentalID() {
+        return rentalID;
+    }
+
+    public void setRentalID(int rentalID) {
+        this.rentalID = rentalID;
+    }
+
+    public String getRentalDate() {
+        return rentalDate;
+    }
+
+    public void setRentalDate(String rentalDate) {
+        this.rentalDate = rentalDate;
+    }
+
+    public UserAccount getRentalUserAccount() {
+        return rentalUserAccount;
+    }
+
+    public void setRentalUserAccount(UserAccount rentalUserAccount) {
+        this.rentalUserAccount = rentalUserAccount;
+    }
+
+    public ArrayList<Book> getRentalBookList() {
+        return rentalBookList;
+    }
+
+    public void addBook(Book book) {
+        rentalBookList.add(book);
+    }
+
+    public void removeBook(Book book) {
+        rentalBookList.remove(book);
+    }
+
+    public double totalRentalPrice() {
+        double total = 0;
+        for (Book book : rentalBookList) {
+            total += book.getRental();
+        }
+        return total;
     }
 }
